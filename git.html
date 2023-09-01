@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GitHub Repositories</title>
+    <style>
+        img {
+            height: 100px;
+            width: 100px;
+            border: 2px solid black;
+            border-radius: 50%;
+        }
+
+        #avatarContainer {
+            position: absolute;
+            margin-top: -8%;
+            margin-left: 1200px;
+        }
+
+        header {
+            position: absolute;
+            top: 20px;
+            left: -330%;
+            font-size: 50px;
+            font-family: 'Times New Roman', Times, serif;
+        }
+
+        #repoContainer {
+            display: flex; /* Use Flexbox to display divs side by side */
+            flex-wrap: wrap; /* Allow divs to wrap to the next line if they exceed the container width */
+            margin-top: 100px; /* Add some margin to separate from the avatar */
+        }
+
+        .container {
+            flex-basis: calc(35.33% - 20px); /* Set the width of each container to one-third */
+            background-color: none;
+            border: 1px solid black; /* Add a border */
+            margin: 50px; /* Add margin to separate containers */
+            padding: 60px;
+            box-shadow: 5px 5px 10px rgba(0, 0, 0, 0.2);
+        }
+
+        .container a {
+            text-decoration: none;
+            color: black;
+        }
+        #avatarContainer{
+            position: absolute;
+            top: 20%;
+        }
+        a{
+            font-size: 30px;
+        }
+
+        .container:hover{
+            background-color: black;
+        }
+        .container:hover a {
+    color: white;
+}
+
+    </style>
+</head>
+<body>
+    <input id="userName" placeholder="username: ">
+    <button>Submit</button>
+    <div id="avatarContainer"></div>
+    <div id="repoContainer"></div>
+    <script>
+        const button = document.querySelector('button');
+
+        async function getRepo() {
+            try {
+                const userName = document.querySelector('#userName').value;
+                console.log(userName);
+
+                const data = await fetch(`https://api.github.com/users/${userName}/repos`);
+                const response = await data.json();
+                console.log(response);
+                console.log(response[0].owner);
+
+                const avatar = document.createElement('img');
+                avatar.src = response[0].owner.avatar_url;
+                console.log(avatar);
+
+                const container = document.querySelector('#avatarContainer');
+                container.innerHTML = '';
+                container.appendChild(avatar);
+
+                const name = document.createElement('header');
+                name.innerHTML = userName;
+                container.appendChild(name);
+
+                const repoContainer = document.querySelector('#repoContainer');
+                repoContainer.innerHTML = ''; // Clear previous content
+
+                response.forEach(element => {
+                    const link = document.createElement('a');
+                    link.href = `https://github.com/${element.full_name}`;
+                    link.textContent = element.full_name;
+                    link.target = '_blank';
+                    console.log(link.href);
+
+                    const div = document.createElement('div');
+                    div.className = 'container';
+                    div.appendChild(link);
+
+                    // Append the container to the parent container
+                    repoContainer.appendChild(div);
+                });
+
+            } catch (error) {
+                console.error(error.message + ' ' + 'DATA!');
+            }
+        }
+
+        button.addEventListener('click', getRepo);
+
+    </script>
+</body>
+</html>
